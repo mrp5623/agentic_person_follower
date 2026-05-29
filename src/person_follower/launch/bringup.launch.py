@@ -15,34 +15,34 @@ def generate_launch_description():
 
         Node(
             package='person_follower',
-            executable='perception_node',
+            executable='perception',
             name='perception_node',
             parameters=[config],
             output='screen'
         ),
 
-        Node(
-            package='person_follower',
-            executable='tracker_node',
-            name='tracker_node',
-            parameters=[config],
-            output='screen'
-        ),
+        # Node(
+        #     package='person_follower',
+        #     executable='tracking',
+        #     name='tracker_node',
+        #     parameters=[config],
+        #     output='screen'
+        # ),
 
-        Node(
-            package='person_follower',
-            executable='agent_node',
-            name='agent_node',
-            parameters=[config],
-            output='screen'
-        ),
+        # Node(
+        #     package='person_follower',
+        #     executable='agent',
+        #     name='agent_node',
+        #     parameters=[config],
+        #     output='screen'
+        # ),
 
-        Node(
-            package='person_follower',
-            executable='controller_node',
-            name='controller_node',
-            parameters=[config],
-            output='screen'
-        ),
+        # Node(
+        #     package='person_follower',
+        #     executable='control',
+        #     name='controller_node',
+        #     parameters=[config],
+        #     output='screen'
+        # ),
 
     ])
