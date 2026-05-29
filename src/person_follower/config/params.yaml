@@ -1,6 +1,6 @@
 perception_node:
   ros__parameters:
-    image_topic: "/oakd/rgb/image_raw"
+    image_topic: "/oakd/rgb/preview/image_raw"
     scan_topic: "/scan"
     yolo_model: "yolov8n.pt"
     detection_confidence: 0.5

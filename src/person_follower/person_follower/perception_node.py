@@ -65,6 +65,8 @@ class PerceptionNode(Node):
 
         results = self.model(frame, classes=[0], conf=self.conf_threshold, verbose=False)
 
+        self.get_logger().info(f'YOLO results: {len(results[0].boxes)} detections')
+
         detection_array = Detection2DArray()
         detection_array.header = msg.header
 
@@ -77,7 +79,7 @@ class PerceptionNode(Node):
 
                 # Convert pixel x position to angle relative to robot forward
                 # Positive angle = person is to the left
-                angle = ((image_width / 2) - cx) / (image_width / 2) * (self.model.predictor.model.args.get('fov', 60) / 2)
+                angle = ((image_width / 2) - cx) / (image_width / 2) * (69.0 / 2)
                 angle_rad = np.deg2rad(angle)
 
                 # Get distance from LIDAR
@@ -101,7 +103,7 @@ class PerceptionNode(Node):
 
                 # Store distance and angle as z position and theta
                 detection.bbox.center.theta = angle_rad
-                detection.results[0].pose.pose.position.z = distance
+                detection.results[0].pose.pose.position.z = float(distance)
 
                 detection_array.detections.append(detection)
 
