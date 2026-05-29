@@ -1,0 +1,24 @@
+perception_node:
+  ros__parameters:
+    image_topic: "/oakd/rgb/image_raw"
+    scan_topic: "/scan"
+    yolo_model: "yolov8n.pt"
+    detection_confidence: 0.5
+    lidar_search_angle: 10.0
+
+tracker_node:
+  ros__parameters:
+    max_lost_frames: 10
+
+agent_node:
+  ros__parameters:
+    target_distance: 1.0
+    max_linear_speed: 0.3
+    max_angular_speed: 1.0
+
+controller_node:
+  ros__parameters:
+    linear_kp: 0.5
+    angular_kp: 1.0
+    max_linear_speed: 0.3
+    max_angular_speed: 1.0
