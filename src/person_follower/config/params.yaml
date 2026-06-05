@@ -18,7 +18,9 @@ agent_node:
 
 controller_node:
   ros__parameters:
+    target_distance: 1.0
     linear_kp: 0.5
     angular_kp: 1.0
-    max_linear_speed: 0.3
-    max_angular_speed: 1.0
+    max_linear_speed: 0.4
+    max_angular_speed: .8
+    max_lost_frames: 10

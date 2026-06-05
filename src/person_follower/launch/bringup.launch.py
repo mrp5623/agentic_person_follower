@@ -37,12 +37,12 @@ def generate_launch_description():
         #     output='screen'
         # ),
 
-        # Node(
-        #     package='person_follower',
-        #     executable='control',
-        #     name='controller_node',
-        #     parameters=[config],
-        #     output='screen'
-        # ),
+        Node(
+            package='person_follower',
+            executable='control',
+            name='controller_node',
+            parameters=[config],
+            output='screen'
+        ),
 
     ])
