@@ -21,13 +21,13 @@ def generate_launch_description():
             output='screen'
         ),
 
-        # Node(
-        #     package='person_follower',
-        #     executable='tracking',
-        #     name='tracker_node',
-        #     parameters=[config],
-        #     output='screen'
-        # ),
+        Node(
+            package='person_follower',
+            executable='tracking',
+            name='tracker_node',
+            parameters=[config],
+            output='screen'
+        ),
 
         # Node(
         #     package='person_follower',

@@ -132,11 +132,11 @@ class PerceptionNode(Node):
         if not valid_ranges:
             return None
 
-        self.get_logger().info(
-            f'angle_deg: {math.degrees(angle_rad):.1f}, '
-            f'idx: {idx}, '
-            f'distance: {min(valid_ranges):.3f}'
-        )
+        # self.get_logger().info(
+        #     f'angle_deg: {math.degrees(angle_rad):.1f}, '
+        #     f'idx: {idx}, '
+        #     f'distance: {min(valid_ranges):.3f}'
+        # )
 
         return min(valid_ranges)
 

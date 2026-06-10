@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from vision_msgs.msg import Detection2DArray
+from std_msgs.msg import Float32MultiArray
 from geometry_msgs.msg import Twist
 import math
 
@@ -27,8 +27,8 @@ class ControllerNode(Node):
         self.lost_frames = 0
 
         self.detection_sub = self.create_subscription(
-            Detection2DArray,
-            '/person_detections',
+           Float32MultiArray,
+            '/tracked_person',
             self.detection_callback,
             10
         )
@@ -44,26 +44,41 @@ class ControllerNode(Node):
     def detection_callback(self, msg):
         cmd = Twist()
 
-        if len(msg.detections) == 0:
+        track_id = msg.data[0]
+        angle = msg.data[1]
+        distance = msg.data[2]
+    
+        # -1 means no target
+        if track_id < 0:
             self.lost_frames += 1
             if self.lost_frames >= self.max_lost_frames:
-                self.cmd_vel_pub.publish(cmd)  # publish empty Twist to stop
+                self.cmd_vel_pub.publish(cmd)
             return
 
         self.lost_frames = 0
-        
-        detection = msg.detections[0] #closest or highest priority?
 
-        angle = detection.bbox.center.theta
-        distance = detection.results[0].pose.pose.position.z
+        DISTANCE_DEAD_ZONE = 0.08
 
         distance_error = distance - self.target_distance
-        cmd.linear.x = float( max(-self.max_linear_speed, min(self.max_linear_speed, self.linear_kp * distance_error))) #clamp error adjusted speed
+        if abs(distance_error) < DISTANCE_DEAD_ZONE:  
+            cmd.linear.x = 0.0
+        else:
+            cmd.linear.x = float(max(-self.max_linear_speed,
+                min(self.max_linear_speed, self.linear_kp * distance_error)))
 
-        cmd.angular.z = float( max(-self.max_angular_speed, min(self.max_angular_speed, self.angular_kp * angle)))
+        ANGULAR_DEAD_ZONE = 0.1
+
+        if abs(angle) < ANGULAR_DEAD_ZONE:
+            cmd.angular.z = 0.0
+        else:
+            cmd.angular.z = float(
+                max(-self.max_angular_speed,
+                    min(self.max_angular_speed,
+                        self.angular_kp * angle))
+            )
 
         self.cmd_vel_pub.publish(cmd)
-        
+
 def main(args=None):
     rclpy.init(args=args)
     node = ControllerNode()
