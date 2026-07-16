@@ -24,3 +24,5 @@ controller_node:
     max_linear_speed: 0.4
     max_angular_speed: .8
     max_lost_frames: 10
+    search_speed: 0.2
+    search_seconds: 10

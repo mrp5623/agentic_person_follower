@@ -16,6 +16,8 @@ class ControllerNode(Node):
         self.declare_parameter('max_linear_speed', .3)
         self.declare_parameter('max_angular_speed', 1.0)
         self.declare_parameter('max_lost_frames', 10)
+        self.declare_parameter('search_speed', .2)
+        self.declare_parameter('search_seconds', 10)
         
         self.target_distance = self.get_parameter('target_distance').value
         self.linear_kp = self.get_parameter('linear_kp').value
@@ -23,8 +25,13 @@ class ControllerNode(Node):
         self.max_linear_speed = self.get_parameter('max_linear_speed').value
         self.max_angular_speed = self.get_parameter('max_angular_speed').value
         self.max_lost_frames = self.get_parameter('max_lost_frames').value
+        self.search_speed = self.get_parameter('search_speed').value
+        self.search_seconds = self.get_parameter('search_seconds').value
 
         self.lost_frames = 0
+        self.last_angle = 0 #will be updated on first frame in practice
+        self.lost_time =0
+        self.isSearching = False
 
         self.detection_sub = self.create_subscription(
            Float32MultiArray,
@@ -51,10 +58,36 @@ class ControllerNode(Node):
         # -1 means no target
         if track_id < 0:
             self.lost_frames += 1
-            if self.lost_frames >= self.max_lost_frames:
-                self.cmd_vel_pub.publish(cmd)
-            return
+            if self.lost_frames == 1:
+                self.lost_time = self.get_clock().now()
 
+            if self.lost_frames <= self.max_lost_frames:
+                self.cmd_vel_pub.publish(cmd)
+                return
+            
+            if not self.isSearching:
+                self.isSearching = True
+                self.get_logger().info('Searching...')
+                
+
+            if((self.get_clock().now()-self.lost_time).nanoseconds/1e9 > self.search_seconds): 
+                self.get_logger().info('Reacquisition failed')
+                self.isSearching = False
+                self.cmd_vel_pub.publish(cmd)
+                return
+            
+            spin_dir = 1 if self.last_angle >=0 else -1
+            cmd.angular.z = spin_dir * self.search_speed
+            self.cmd_vel_pub.publish(cmd)
+            return
+                 
+
+        if self.isSearching:
+            self.get_logger().info(f'Target reacquired in {(self.get_clock().now()-self.lost_time).nanoseconds/1e9} seconds')
+            self.isSearching = False
+
+        self.last_angle = angle
+    
         self.lost_frames = 0
 
         DISTANCE_DEAD_ZONE = 0.08
